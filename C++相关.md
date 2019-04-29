@@ -789,10 +789,67 @@ SGI STL中的set和map是基于红黑树来实现的；
 
 （5）红黑树的基本操作时间复杂度控制在log(N)内。
 
-（6）红黑树与AVL树相比的话，没有AVL树要求左右子树高相差不大于1这样严格的平衡条件，因此在旋转没有AVL树复杂，会得到更好的统计特性。
+（6）红黑树与AVL树相比的话，没有AVL树要求左右子树高相差不大于1这样严格的平衡条件，因此在旋转没有AVL树复杂，红黑树在插入和删除最多只需要三次旋转，而AVL树则可能需要很多次旋转，因此红黑树会得到更好的统计特性。
 
 
 
 ***STL中的模板特化什么意思？**
 
+将泛型的模板变得更加具体，对已有的模板参数添加一些使其特殊化的指定，有偏特化和全特化。
+
+全特化就是模板中的参数被全部指定为确定的类型。
+
+偏特化就是模板中的参数没有全部确定，需要在编译器阶段确定。
+
 ***手写strcpy和memcpy，要考虑到memcpy内存重叠的问题**
+
+```c++
+char* strcpy(char* mem_copy,const char* mem){
+    if(mem==nullptr||mem_copy==nullptr)
+        return nullptr;
+    char* tmp_copy = mem_copy;
+    
+    while((*tmp_copy++ = *mem++)!='\0');
+    return mem_copy;
+}
+```
+
+```c++
+//不考虑内存重叠
+void* memcpy(void* mem_cpy,const void* mem,size_t n){
+    if(mem_cpy==nullptr||mem==nullptr)
+        return nullptr;    
+    char* tmp_cpy = (char *)mem_cpy;
+    char* tmp = (char *)mem;
+ 
+    while(n--){
+        *tmp_cpy++ = *tmp++;
+    }
+    return mem_cpy;
+}
+
+//考虑内存重叠
+void* memcpy(void* mem_cpy,const void* mem,size_t n){
+    if(mem_cpy==nullptr||mem==nullptr)
+        return nullptr;    
+    char* tmp_cpy = (char *)mem_cpy;
+    char* tmp = (char *)mem;
+ 
+    if(tmp_cpy>tmp&&tmp_cpy<=tmp+n-1){
+        tmp_cpy+=n-1;
+        tmp+=n-1;
+        while(n--){
+            *tmp_cpy-- = *tmp--;
+        }
+        
+    }else{
+            while(n--){
+        *tmp_cpy++ = *tmp++;
+		}   
+    }
+    return mem_cpy;
+}
+
+
+```
+
